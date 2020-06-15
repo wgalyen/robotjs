@@ -42,7 +42,7 @@ MMBitmapRef copyMMBitmap(MMBitmapRef bitmap);
 
 /* Returns copy of one MMBitmap juxtaposed in another (to be destroy()'d
  * by the caller.), or NULL on error. */
-MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMRect rect);
+MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMSignedRect rect);
 
 #define MMBitmapPointInBounds(image, p) ((p).x < (image)->width && \
                                          (p).y < (image)->height)
@@ -50,12 +50,12 @@ MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMRect rect);
 	(((r).origin.x + (r).size.width <= (image)->width) && \
 	 ((r).origin.y + (r).size.height <= (image)->height))
 
-#define MMBitmapGetBounds(image) MMRectMake(0, 0, image->width, image->height)
+#define MMBitmapGetBounds(image) MMSignedRectMake(0, 0, image->width, image->height)
 
 /* Get pointer to pixel of MMBitmapRef. No bounds checking is performed (check
  * yourself before calling this with MMBitmapPointInBounds(). */
 #define MMRGBColorRefAtPoint(image, x, y) \
-	(MMRGBColor *)(assert(MMBitmapPointInBounds(bitmap, MMPointMake(x, y))), \
+	(MMRGBColor *)(assert(MMBitmapPointInBounds(bitmap, MMSignedPointMake(x, y))), \
 	               ((image)->imageBuffer) + (((image)->bytewidth * (y)) \
 	                                      + ((x) * (image)->bytesPerPixel)))
 

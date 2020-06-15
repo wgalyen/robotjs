@@ -122,8 +122,8 @@ NAN_METHOD(moveMouseSmooth)
 	size_t x = Nan::To<int32_t>(info[0]).FromJust();
 	size_t y = Nan::To<int32_t>(info[1]).FromJust();
 
-	MMPoint point;
-	point = MMPointMake(x, y);
+	MMSignedPoint point;
+	point = MMSignedPointMake(x, y);
 	if (info.Length() == 3)
 	{
 		size_t speed = Nan::To<int32_t>(info[2]).FromJust();
@@ -140,7 +140,7 @@ NAN_METHOD(moveMouseSmooth)
 
 NAN_METHOD(getMousePos)
 {
-	MMPoint pos = getMousePos();
+	MMSignedPoint pos = getMousePos();
 
 	//Return object with .x and .y.
 	Local<Object> obj = Nan::New<Object>();
@@ -692,28 +692,32 @@ NAN_METHOD(getPixelColor)
 	size_t x = Nan::To<int32_t>(info[0]).FromJust();
 	size_t y = Nan::To<int32_t>(info[1]).FromJust();
 
-	if (!pointVisibleOnMainDisplay(MMPointMake(x, y)))
-	{
-		return Nan::ThrowError("Requested coordinates are outside the main screen's dimensions.");
-	}
+	// if (!pointVisibleOnMainDisplay(MMPointMake(x, y)))
+	// {
+	//	return Nan::ThrowError("Requested coordinates are outside the main screen's // dimensions.");
+	// }
 
 	bitmap = copyMMBitmapFromDisplayInRect(MMRectMake(x, y, 1, 1));
 
-	color = MMRGBHexAtPoint(bitmap, 0, 0);
+	if (bitmap == NULL) {
+		info.GetReturnValue().Set(Nan::New('#FFFFFF').ToLocalChecked());
+	} else {
+		color = MMRGBHexAtPoint(bitmap, 0, 0);
 
-	char hex[7];
+		char hex[7];
 
-	padHex(color, hex);
+		padHex(color, hex);
 
-	destroyMMBitmap(bitmap);
+		destroyMMBitmap(bitmap);
 
-	info.GetReturnValue().Set(Nan::New(hex).ToLocalChecked());
+		info.GetReturnValue().Set(Nan::New(hex).ToLocalChecked());
+	}
 }
 
 NAN_METHOD(getScreenSize)
 {
 	//Get display size.
-	MMSize displaySize = getMainDisplaySize();
+	MMSignedSize displaySize = getMainDisplaySize();
 
 	//Create our return object.
 	Local<Object> obj = Nan::New<Object>();
@@ -770,12 +774,12 @@ NAN_METHOD(captureScreen)
 		y = 0;
 
 		//Get screen size.
-		MMSize displaySize = getMainDisplaySize();
+		MMSignedSize displaySize = getMainDisplaySize();
 		w = displaySize.width;
 		h = displaySize.height;
 	}
 
-	MMBitmapRef bitmap = copyMMBitmapFromDisplayInRect(MMRectMake(x, y, w, h));
+	MMBitmapRef bitmap = copyMMBitmapFromDisplayInRect(MMSignedRectMake(x, y, w, h));
 
 	uint32_t bufferSize = bitmap->bytewidth * bitmap->height;
 	Local<Object> buffer = Nan::NewBuffer((char*)bitmap->imageBuffer, bufferSize, destroyMMBitmapBuffer, NULL).ToLocalChecked();
@@ -848,9 +852,10 @@ NAN_METHOD(getColor)
 	bitmap = createMMBitmap(img.image, img.width, img.height, img.byteWidth, img.bitsPerPixel, img.bytesPerPixel);
 
 	// Make sure the requested pixel is inside the bitmap.
-	if (!MMBitmapPointInBounds(bitmap, MMPointMake(x, y)))
+	if (!MMBitmapPointInBounds(bitmap, MMSignedPointMake(x, y)))
 	{
-		return Nan::ThrowError("Requested coordinates are outside the bitmap's dimensions.");
+		// return Nan::ThrowError("Requested coordinates are outside the bitmap's dimensions.");
+		return info.GetReturnValue().Set(Nan::New("#FFFFFF").ToLocalChecked());
 	}
 
 	color = MMRGBHexAtPoint(bitmap, x, y);

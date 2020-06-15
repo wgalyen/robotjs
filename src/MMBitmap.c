@@ -63,7 +63,7 @@ MMBitmapRef copyMMBitmap(MMBitmapRef bitmap)
 	                      bitmap->bytesPerPixel);
 }
 
-MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMRect rect)
+MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMSignedRect rect)
 {
 	assert(source != NULL);
 
