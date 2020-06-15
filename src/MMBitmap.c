@@ -3,9 +3,9 @@
 #include <string.h>
 
 MMBitmapRef createMMBitmap(uint8_t *buffer,
-                           size_t width,
-                           size_t height,
-                           size_t bytewidth,
+                           int32_t width,
+                           int32_t height,
+                           int32_t bytewidth,
                            uint8_t bitsPerPixel,
                            uint8_t bytesPerPixel)
 {
@@ -48,7 +48,7 @@ MMBitmapRef copyMMBitmap(MMBitmapRef bitmap)
 
 	assert(bitmap != NULL);
 	if (bitmap->imageBuffer != NULL) {
-		const size_t bufsize = bitmap->height * bitmap->bytewidth;
+		const int32_t bufsize = bitmap->height * bitmap->bytewidth;
 		copiedBuf = malloc(bufsize);
 		if (copiedBuf == NULL) return NULL;
 
@@ -71,8 +71,8 @@ MMBitmapRef copyMMBitmapFromPortion(MMBitmapRef source, MMSignedRect rect)
 		return NULL;
 	} else {
 		uint8_t *copiedBuf = NULL;
-		const size_t bufsize = rect.size.height * source->bytewidth;
-		const size_t offset = (source->bytewidth * rect.origin.y) +
+		const int32_t bufsize = rect.size.height * source->bytewidth;
+		const int32_t  offset = (source->bytewidth * rect.origin.y) +
 		                      (rect.origin.x * source->bytesPerPixel);
 
 		/* Don't go over the bounds, programmer! */

@@ -514,11 +514,8 @@ NAN_METHOD(keyTap)
 			return Nan::ThrowError("Invalid key code specified.");
 			break;
 		default:
-			toggleKeyCode(key, true, flags);
+			tapKeyCode(key, flags);
 			microsleep(keyboardDelay);
-			toggleKeyCode(key, false, flags);
-			microsleep(keyboardDelay);
-			break;
 	}
 
 	info.GetReturnValue().Set(Nan::New(1));
@@ -599,51 +596,30 @@ NAN_METHOD(keyToggle)
 	info.GetReturnValue().Set(Nan::New(1));
 }
 
-NAN_METHOD(unicodeTap)
-{
-	size_t value = info[0]->Int32Value(Nan::GetCurrentContext()).FromJust();
-
-	if (value != 0) {
-		unicodeTap(value);
-
-		info.GetReturnValue().Set(Nan::New(1));
-	} else {
-		return Nan::ThrowError("Invalid character typed.");
-	}
-}
-
 NAN_METHOD(typeString)
 {
-	if (info.Length() > 0) {
-		char *str;
-		Nan::Utf8String string(info[0]);
+	char *str;
+	Nan::Utf8String string(info[0]);
 
 		str = *string;
 
-		typeStringDelayed(str, 0);
+	typeString(str);
 
-		info.GetReturnValue().Set(Nan::New(1));
-	} else {
-		return Nan::ThrowError("Invalid number of arguments.");
-	}
+	info.GetReturnValue().Set(Nan::New(1));
 }
 
 NAN_METHOD(typeStringDelayed)
 {
-	if (info.Length() > 0) {
-		char *str;
-		Nan::Utf8String string(info[0]);
+	char *str;
+	Nan::Utf8String string(info[0]);
 
-		str = *string;
+	str = *string;
 
 	size_t cpm = Nan::To<int32_t>(info[1]).FromJust();
 
-		typeStringDelayed(str, cpm);
+	typeStringDelayed(str, cpm);
 
-		info.GetReturnValue().Set(Nan::New(1));
-	} else {
-		return Nan::ThrowError("Invalid number of arguments.");
-	}
+	info.GetReturnValue().Set(Nan::New(1));
 }
 
 NAN_METHOD(setKeyboardDelay)
@@ -697,10 +673,10 @@ NAN_METHOD(getPixelColor)
 	//	return Nan::ThrowError("Requested coordinates are outside the main screen's // dimensions.");
 	// }
 
-	bitmap = copyMMBitmapFromDisplayInRect(MMRectMake(x, y, 1, 1));
+	bitmap = copyMMBitmapFromDisplayInRect(MMSignedRectMake(x, y, 1, 1));
 
 	if (bitmap == NULL) {
-		info.GetReturnValue().Set(Nan::New('#FFFFFF').ToLocalChecked());
+		info.GetReturnValue().Set(Nan::New("FFFFFF").ToLocalChecked());
 	} else {
 		color = MMRGBHexAtPoint(bitmap, 0, 0);
 
@@ -751,10 +727,10 @@ NAN_METHOD(setXDisplayName)
 
 NAN_METHOD(captureScreen)
 {
-	size_t x;
-	size_t y;
-	size_t w;
-	size_t h;
+	int32_t x;
+	int32_t y;
+	int32_t w;
+	int32_t h;
 
 	//If user has provided screen coords, use them!
 	if (info.Length() == 4)
@@ -807,9 +783,9 @@ NAN_METHOD(captureScreen)
 class BMP
 {
 	public:
-		size_t width;
-		size_t height;
-		size_t byteWidth;
+		int32_t width;
+		int32_t height;
+		int32_t byteWidth;
 		uint8_t bitsPerPixel;
 		uint8_t bytesPerPixel;
 		uint8_t *image;
@@ -842,8 +818,8 @@ NAN_METHOD(getColor)
 	MMBitmapRef bitmap;
 	MMRGBHex color;
 
-	size_t x = Nan::To<int32_t>(info[1]).FromJust();
-	size_t y = Nan::To<int32_t>(info[2]).FromJust();
+	int32_t x = Nan::To<int32_t>(info[1]).FromJust();
+	int32_t y = Nan::To<int32_t>(info[2]).FromJust();
 
 	//Get our image object from JavaScript.
 	BMP img = buildBMP(Nan::To<v8::Object>(info[0]).ToLocalChecked());
@@ -904,9 +880,6 @@ NAN_MODULE_INIT(InitAll)
 
 	Nan::Set(target, Nan::New("keyToggle").ToLocalChecked(),
 		Nan::GetFunction(Nan::New<FunctionTemplate>(keyToggle)).ToLocalChecked());
-
-	Nan::Set(target, Nan::New("unicodeTap").ToLocalChecked(),
-		Nan::GetFunction(Nan::New<FunctionTemplate>(unicodeTap)).ToLocalChecked());
 
 	Nan::Set(target, Nan::New("typeString").ToLocalChecked(),
 		Nan::GetFunction(Nan::New<FunctionTemplate>(typeString)).ToLocalChecked());

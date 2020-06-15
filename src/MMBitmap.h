@@ -15,9 +15,9 @@ extern "C"
 struct _MMBitmap {
 	uint8_t *imageBuffer;  /* Pixels stored in Quad I format; i.e., origin is in
 	                        * top left. Length should be height * bytewidth. */
-	size_t width;          /* Never 0, unless image is NULL. */
-	size_t height;         /* Never 0, unless image is NULL. */
-	size_t bytewidth;      /* The aligned width (width + padding). */
+	int32_t width;          /* Never 0, unless image is NULL. */
+	int32_t height;         /* Never 0, unless image is NULL. */
+	int32_t bytewidth;      /* The aligned width (width + padding). */
 	uint8_t bitsPerPixel;  /* Should be either 24 or 32. */
 	uint8_t bytesPerPixel; /* For convenience; should be bitsPerPixel / 8. */
 };
@@ -27,8 +27,8 @@ typedef MMBitmap *MMBitmapRef;
 
 /* Creates new MMBitmap with the given values.
  * Follows the Create Rule (caller is responsible for destroy()'ing object). */
-MMBitmapRef createMMBitmap(uint8_t *buffer, size_t width, size_t height,
-                           size_t bytewidth, uint8_t bitsPerPixel,
+MMBitmapRef createMMBitmap(uint8_t *buffer, int32_t width, int32_t height,
+                           int32_t bytewidth, uint8_t bitsPerPixel,
 						   uint8_t bytesPerPixel);
 
 /* Releases memory occupied by MMBitmap. */

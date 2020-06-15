@@ -132,8 +132,8 @@ void moveMouse(MMSignedPoint point)
 	//Mouse motion is now done using SendInput with MOUSEINPUT. We use Absolute mouse positioning
 	#define MOUSE_COORD_TO_ABS(coord, width_or_height) ((65536 * (coord) / width_or_height) + ((coord) < 0 ? -1 : 1))
 
-	size_t x = MOUSE_COORD_TO_ABS(point.x-vscreenMinX, vscreenWidth);
-	size_t y = MOUSE_COORD_TO_ABS(point.y-vscreenMinY, vscreenHeight);
+	int32_t x = MOUSE_COORD_TO_ABS(point.x-vscreenMinX, vscreenWidth);
+	int32_t y = MOUSE_COORD_TO_ABS(point.y-vscreenMinY, vscreenHeight);
 
 	INPUT mouseInput = {0};
 	mouseInput.type = INPUT_MOUSE;
@@ -325,25 +325,24 @@ void scrollMouse(int x, int y)
 
 #elif defined(IS_WINDOWS)
 
-	// Must send y first, otherwise we get stuck when scrolling on y axis
 	mouseScrollInputs[0].type = INPUT_MOUSE;
 	mouseScrollInputs[0].mi.dx = 0;
 	mouseScrollInputs[0].mi.dy = 0;
-	mouseScrollInputs[0].mi.dwFlags = MOUSEEVENTF_WHEEL;
+	mouseScrollInputs[0].mi.dwFlags = MOUSEEVENTF_HWHEEL;
 	mouseScrollInputs[0].mi.time = 0;
 	mouseScrollInputs[0].mi.dwExtraInfo = 0;
-	mouseScrollInputs[0].mi.mouseData = y;
+	// Flip x to match other platforms.
+	mouseScrollInputs[0].mi.mouseData = -x;
 
 	mouseScrollInputs[1].type = INPUT_MOUSE;
 	mouseScrollInputs[1].mi.dx = 0;
 	mouseScrollInputs[1].mi.dy = 0;
-	mouseScrollInputs[1].mi.dwFlags = MOUSEEVENTF_HWHEEL;
+	mouseScrollInputs[1].mi.dwFlags = MOUSEEVENTF_WHEEL;
 	mouseScrollInputs[1].mi.time = 0;
 	mouseScrollInputs[1].mi.dwExtraInfo = 0;
-	// Flip x to match other platforms.
-	mouseScrollInputs[1].mi.mouseData = -x;
+	mouseScrollInputs[1].mi.mouseData = y;
 
-	SendInput(2, mouseScrollInputs, sizeof(INPUT));
+	SendInput(2, mouseScrollInputs, sizeof(mouseScrollInputs));
 #endif
 }
 

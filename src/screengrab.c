@@ -21,7 +21,7 @@ MMBitmapRef copyMMBitmapFromDisplayInRect(MMSignedRect rect)
 
 	MMBitmapRef bitmap = NULL;
 	uint8_t *buffer = NULL;
-	size_t bufferSize = 0;
+	int32_t bufferSize = 0;
 
 	CGDirectDisplayID displayID = CGMainDisplayID();
 
@@ -72,7 +72,7 @@ MMBitmapRef copyMMBitmapFromDisplayInRect(MMSignedRect rect)
 	bitmap = createMMBitmap((uint8_t *)image->data,
 	                        rect.size.width,
 	                        rect.size.height,
-	                        (size_t)image->bytes_per_line,
+	                        (int32_t)image->bytes_per_line,
 	                        (uint8_t)image->bits_per_pixel,
 	                        (uint8_t)image->bits_per_pixel / 8);
 	image->data = NULL; /* Steal ownership of bitmap data so we don't have to

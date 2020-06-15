@@ -18,11 +18,11 @@ MMSignedSize getMainDisplaySize(void)
 	Display *display = XGetMainDisplay();
 	const int screen = DefaultScreen(display);
 
-	return MMSignedSizeMake((size_t)DisplayWidth(display, screen),
-	                  (size_t)DisplayHeight(display, screen));
+	return MMSignedSizeMake((int32_t)DisplayWidth(display, screen),
+	                  (int32_t)DisplayHeight(display, screen));
 #elif defined(IS_WINDOWS)
-	return MMSignedSizeMake((size_t)GetSystemMetrics(SM_CXSCREEN),
-	                  (size_t)GetSystemMetrics(SM_CYSCREEN));
+	return MMSignedSizeMake((int32_t)GetSystemMetrics(SM_CXSCREEN),
+	                  (int32_t)GetSystemMetrics(SM_CYSCREEN));
 #endif
 }
 

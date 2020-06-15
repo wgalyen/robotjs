@@ -66,8 +66,8 @@ void tapKeyCode(MMKeyCode code, MMKeyFlags flags);
 void toggleKey(char c, const bool down, MMKeyFlags flags);
 void tapKey(char c, MMKeyFlags flags);
 
-/* Sends a Unicode character without modifiers. */
-void unicodeTap(const unsigned value);
+/* Sends a UTF-8 string without modifiers. */
+void typeString(const char *str);
 
 /* Macro to convert WPM to CPM integers.
  * (the average English word length is 5.1 characters.) */
